@@ -1,0 +1,35 @@
+### Test successful POST /todos
+POST http://localhost:3000/todos
+Content-Type: application/json
+Accept: application/json
+
+{
+    "title": "1",
+    "description": "1",
+    "state": "1"
+}
+
+### Test POST /todos errors
+POST http://localhost:3000/todos
+Accept: application/json
+
+### Test GET /todos
+GET http://localhost:3000/todos
+Accept: application/json
+
+### Test successful GET /todos/{id}
+GET  http://localhost:3000/todos/0
+Accept: application/json
+
+### Test successful PUT /todos/{id}
+PUT http://localhost:3000/todos/0
+Content-Type: application/json
+Accept: application/json
+
+{
+    "state": "done"
+}
+
+### Test successful DELETE /todos/{id}
+DELETE http://localhost:3000/todos/0
+Accept: application/json
