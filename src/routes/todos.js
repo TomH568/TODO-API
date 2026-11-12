@@ -1,4 +1,4 @@
-import express, { response } from 'express'
+import express from 'express'
 import { v4 as uuidv4 } from 'uuid'
 
 const router = express.Router()
@@ -42,7 +42,19 @@ router.post('/', (req, res) => {
 
 // GET /todos
 router.get('/', (req, res) => {
-    res.json( todos )
+    if (req.query.state) {
+        let filteredtodos = new Array
+        todos.forEach(item => {
+            if (item.state == req.query.state) {
+                filteredtodos.push(item)
+            }
+        })
+        if ( filteredtodos.length == 0 ) {
+            return res.status(404).json({error: "No todos with selected filter"})
+        }
+        return res.json( filteredtodos )
+    }
+    return res.json( todos )
 })
 
 // GET /todos/{id}
