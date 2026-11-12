@@ -24,6 +24,10 @@ Accept: application/json
 
 {}
 
+### Test POST /todos/{id} error 405
+POST   http://localhost:3000/todos/0
+Accept: application/json
+
 ### Test successful GET /todos all
 GET http://localhost:3000/todos
 Accept: application/json
@@ -42,6 +46,11 @@ Accept: application/json
 
 ### Test GET /todos/{id} error 404
 GET  http://localhost:3000/todos/1
+Accept: application/json
+
+### Test PUT /todos/ error 405
+PUT http://localhost:3000/todos/
+Content-Type: application/json
 Accept: application/json
 
 ### Test successful PUT /todos/{id}
@@ -78,6 +87,9 @@ Accept: application/json
     "state": "done"
 }
 
+### Test DELETE /todos/ error 405
+DELETE http://localhost:3000/todos/
+Accept: application/json
 
 ### Test successful DELETE /todos/{id}
 DELETE http://localhost:3000/todos/0

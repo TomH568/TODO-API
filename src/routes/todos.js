@@ -52,6 +52,11 @@ router.post('/', (req, res) => {
     return res.status(201).json({Status: "Successfully created todo!", Content: newtodo})
 })
 
+// Not allowed method
+router.post('/:id', (req, res) => {
+    return res.status(405).json({error: "Allow: GET, PUT, DELETE"})
+})
+
 // GET /todos
 router.get('/', (req, res) => {
     if (req.query.state) {
@@ -78,6 +83,11 @@ router.get('/:id', (req, res) => {
     } else {
         return res.status(200).json( todo )
     }
+})
+
+// Not allowed method
+router.put('/', (req, res) => {
+    return res.status(405).json({error: "Allow: POST, GET"})
 })
 
 // PUT /todos/{id}
@@ -114,6 +124,11 @@ router.put('/:id', (req, res) => {
     }
     todo.modifiedAt = Date(Date.now()).toString() // Always updated with successful update
     return res.status(200).json({Status: "Successfully updated todo!", "Content": todo})
+})
+
+// Not allowed method
+router.delete('/', (req, res) => {
+    return res.status(405).json({error: "Allow: POST, GET"})
 })
 
 // DELETE /todos/{id}
