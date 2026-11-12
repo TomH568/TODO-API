@@ -8,11 +8,16 @@ Accept: application/json
     "state": "todo"
 }
 
-### Test POST /todos error 400
+### Test POST /todos error 417
 POST http://localhost:3000/todos
 Accept: application/json
 
-### Test POST /todos error 401
+### Test POST /todos error 415
+POST http://localhost:3000/todos
+Content-Type: application/javascript
+Accept: application/json
+
+### Test POST /todos error 400
 POST http://localhost:3000/todos
 Content-Type: application/json
 Accept: application/json
@@ -27,8 +32,16 @@ Accept: application/json
 GET http://localhost:3000/todos/?state=todo
 Accept: application/json
 
+### Test successful GET /todos with incorrect filter
+GET http://localhost:3000/todos/?state=planning
+Accept: application/json
+
 ### Test successful GET /todos/{id}
 GET  http://localhost:3000/todos/0
+Accept: application/json
+
+### Test GET /todos/{id} error 404
+GET  http://localhost:3000/todos/1
 Accept: application/json
 
 ### Test successful PUT /todos/{id}
@@ -42,4 +55,8 @@ Accept: application/json
 
 ### Test successful DELETE /todos/{id}
 DELETE http://localhost:3000/todos/0
+Accept: application/json
+
+### Test DELETE /todos/{id} error 404
+DELETE http://localhost:3000/todos/1
 Accept: application/json

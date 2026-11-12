@@ -19,16 +19,19 @@ let todos = [
 // POST /todos
 router.post('/', (req, res) => {
     if (!req.header("Content-Type")) {
-        return res.status(400).json({error: "Specify Content-Type"})
+        return res.status(417).json({error: "Specify Content-Type"})
     }
-    if (!req.body.title || !req.body.state) {
-        return res.status(401).json({error: "No title/desciption/state"})
+    if (req.header("Content-Type") != "application/json") {
+        return res.status(415).json({error: "Only Content-Type: application/json accepted"})
+    }
+    if (!req.body.title) { // Title required
+        return res.status(400).json({error: "No provided title"})
     }
     let newdescription = null; // Default (optional)
     if (req.body.description) {
         newdescription = req.body.description
     }
-    let newstate = "todo"; // Default
+    let newstate = "todo"; // Default (required)
     if (req.body.state == "doing" || req.body.state == "done") {
             newstate = req.body.state
     }
@@ -59,11 +62,11 @@ router.get('/', (req, res) => {
             }
         })
         if ( filteredtodos.length == 0 ) {
-            return res.status(404).json({error: "No todos with selected filter"})
+            return res.status(204)
         }
-        return res.json( filteredtodos )
+        return res.status(200).json( filteredtodos )
     }
-    return res.json( todos )
+    return res.status(200).json( todos )
 })
 
 // GET /todos/{id}
@@ -71,9 +74,9 @@ router.get('/:id', (req, res) => {
     const id = req.params.id
     const todo = todos.find( anItem => anItem.id === id )
     if ( !todo ) {
-        return res.status(404).json({error: "Todo not found"})
+        return res.status(404).json({error: `Todo not found with id: ${id}`})
     } else {
-        return res.json( todo )
+        return res.status(200).json( todo )
     }
 })
 
@@ -83,7 +86,7 @@ router.put('/:id', (req, res) => {
         return res.status(400).json({error: "Specify Content-Type"})
     }
     if (!req.body.title && !req.body.description && !req.body.state) {
-        return res.status(401).json({error: "No title/desciption/state"})
+        return res.status(401).json({error: "No provided title/desciption/state to update"})
     }
     const id = req.params.id
     const todo = todos.find( anItem => anItem.id === id )
@@ -104,7 +107,7 @@ router.put('/:id', (req, res) => {
         }
     }
     todo.modifiedAt = Date.now()
-    return res.json({"Status": "successfully updated todo!", "Content": todo})
+    return res.status(200).json({Status: "Successfully updated todo!", "Content": todo})
 })
 
 // DELETE /todos/{id}
@@ -112,10 +115,10 @@ router.delete('/:id', (req, res) => {
     const id = req.params.id
     const todo = todos.find( anItem => anItem.id === id )
     if ( !todo ) {
-        return res.status(404).json({error: "Todo not found"})
+        return res.status(404).json({error: `Todo not found with id: ${id}`})
     }
     todos.splice(todo, 1)
-    return res.json({"Status": "successfully deleted todo!", "id": req.params.id})
+    return res.status(200).json({Status: `Successfully deleted todo with id: ${id}`})
 })
 
 export default router
