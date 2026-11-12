@@ -20,24 +20,27 @@ router.post('/', (req, res) => {
     if (!req.header("Content-Type")) {
         return res.status(400).json({error: "Specify Content-Type"})
     }
-    if (!req.body.title || !req.body.description || !req.body.state) {
+    if (!req.body.title || !req.body.state) {
         return res.status(401).json({error: "No title/desciption/state"})
     }
-    let newstate;
-    if (req.body.state != "todo" && req.body.state != "doing" && req.body.state != "done") {
-            newstate = "todo" // Default
-    } else {
-        newstate = req.body.state
+    let newdescription = null; // Default (description optional)
+    if (req.body.description) {
+        newdescription = req.body.description
     }
-    todos.push({
+    let newstate = "todo"; // Default
+    if (req.body.state == "doing" || req.body.state == "done") {
+            newstate = req.body.state
+    }
+    let newtodo = {
         id: uuidv4(),
         title: req.body.title,
-        description: req.body.description,
+        description: newdescription,
         state: newstate,
         createdAt: Date.now(),
         modifiedAt: Date.now()
-    })
-    return res.json({"Status": "successfully created todo!"})
+    }
+    todos.push(newtodo)
+    return res.status(201).json({Status: "Successfully created todo!", Content: newtodo})
 })
 
 // GET /todos

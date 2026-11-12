@@ -4,20 +4,26 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "title": "1",
-    "description": "1",
-    "state": "1"
+    "title": "Write API documentation",
+    "state": "todo"
 }
 
-### Test POST /todos errors
+### Test POST /todos error 400
 POST http://localhost:3000/todos
 Accept: application/json
 
-### Test GET /todos all
+### Test POST /todos error 401
+POST http://localhost:3000/todos
+Content-Type: application/json
+Accept: application/json
+
+{}
+
+### Test successful GET /todos all
 GET http://localhost:3000/todos
 Accept: application/json
 
-### Test GET /todos with filter
+### Test successful GET /todos with filter
 GET http://localhost:3000/todos/?state=todo
 Accept: application/json
 
