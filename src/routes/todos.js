@@ -11,8 +11,8 @@ let todos = [
         description: 'Read a dissertation by Roy Fielding',
         state: 'todo',
         dueDate: null,
-        createdAt: Date.now(),
-        modifiedAt: Date.now()
+        createdAt: Date(Date.now()).toString(),
+        modifiedAt: Date(Date.now()).toString()
     }
 ]
 
@@ -45,8 +45,8 @@ router.post('/', (req, res) => {
         description: newdescription,
         state: newstate,
         dueDate: newdueDate,
-        createdAt: Date.now(),
-        modifiedAt: Date.now()
+        createdAt: Date(Date.now()).toString(),
+        modifiedAt: Date(Date.now()).toString()
     }
     todos.push(newtodo)
     return res.status(201).json({Status: "Successfully created todo!", Content: newtodo})
@@ -112,7 +112,7 @@ router.put('/:id', (req, res) => {
     if (req.body.dueDate) {
         todo.dueDate = req.body.dueDate
     }
-    todo.modifiedAt = Date.now() // Always updated with successful update
+    todo.modifiedAt = Date(Date.now()).toString() // Always updated with successful update
     return res.status(200).json({Status: "Successfully updated todo!", "Content": todo})
 })
 
