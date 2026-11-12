@@ -10,6 +10,7 @@ let todos = [
         title: 'Study REST APIs',
         description: 'Read a dissertation by Roy Fielding',
         state: 'todo',
+        dueDate: null,
         createdAt: Date.now(),
         modifiedAt: Date.now()
     }
@@ -23,7 +24,7 @@ router.post('/', (req, res) => {
     if (!req.body.title || !req.body.state) {
         return res.status(401).json({error: "No title/desciption/state"})
     }
-    let newdescription = null; // Default (description optional)
+    let newdescription = null; // Default (optional)
     if (req.body.description) {
         newdescription = req.body.description
     }
@@ -31,11 +32,16 @@ router.post('/', (req, res) => {
     if (req.body.state == "doing" || req.body.state == "done") {
             newstate = req.body.state
     }
+    let newdueDate = null; // Default (optional)
+    if (req.body.dueDate) {
+        newdueDate = req.body.dueDate
+    }
     let newtodo = {
         id: uuidv4(),
         title: req.body.title,
         description: newdescription,
         state: newstate,
+        dueDate: newdueDate,
         createdAt: Date.now(),
         modifiedAt: Date.now()
     }
