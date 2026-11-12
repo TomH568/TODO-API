@@ -17,12 +17,31 @@ POST http://localhost:3000/todos
 Content-Type: application/javascript
 Accept: application/json
 
-### Test POST /todos error 400
+### Test POST /todos error 400 "No provided title"
 POST http://localhost:3000/todos
 Content-Type: application/json
 Accept: application/json
 
 {}
+
+### Test POST /todos error 400 "Title should be a string."
+POST http://localhost:3000/todos
+Content-Type: application/json
+Accept: application/json
+
+{
+    "title": 1
+}
+
+### Test POST /todos error 400 "Description should be a string."
+POST http://localhost:3000/todos
+Content-Type: application/json
+Accept: application/json
+
+{
+    "title": "string",
+    "description": {"state": "done"}
+}
 
 ### Test POST /todos/{id} error 405
 POST   http://localhost:3000/todos/0
@@ -85,6 +104,24 @@ Accept: application/json
 
 {
     "state": "done"
+}
+
+### Test PUT /todos/{id} error 400 "Title should be a string."
+PUT http://localhost:3000/todos/0
+Content-Type: application/json
+Accept: application/json
+
+{
+    "title": 1
+}
+
+### Test PUT /todos/{id} error 400 "Title should be a string."
+PUT http://localhost:3000/todos/0
+Content-Type: application/json
+Accept: application/json
+
+{
+    "description": 1
 }
 
 ### Test DELETE /todos/ error 405

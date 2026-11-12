@@ -27,13 +27,19 @@ router.post('/', (req, res) => {
     if (!req.body.title) { // Title required
         return res.status(400).json({error: "No provided title"})
     }
+    if (typeof req.body.title != "string") {
+        return res.status(400).json({error: "Title should be a string."})
+    }
     let newdescription = null; // Default (optional)
     if (req.body.description) {
+        if (typeof req.body.description != "string") {
+            return res.status(400).json({error: "Description should be a string."})
+        }
         newdescription = req.body.description
     }
     let newstate = "todo"; // Default (required)
     if (req.body.state == "doing" || req.body.state == "done") {
-            newstate = req.body.state
+        newstate = req.body.state
     }
     let newdueDate = null; // Default (optional)
     if (req.body.dueDate) {
@@ -107,9 +113,15 @@ router.put('/:id', (req, res) => {
         return res.status(404).json({error: "Todo not found"})
     }
     if (req.body.title) {
+        if (typeof req.body.title != "string") {
+            return res.status(400).json({error: "Title should be a string."})
+        }
         todo.title = req.body.title
     }
     if (req.body.description) {
+        if (typeof req.body.description != "string") {
+            return res.status(400).json({error: "Description should be a string."})
+        }
         todo.description = req.body.description
     }
     if (req.body.state) {
