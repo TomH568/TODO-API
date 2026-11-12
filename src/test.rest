@@ -53,6 +53,32 @@ Accept: application/json
     "state": "done"
 }
 
+### Test PUT /todos/{id} error 417
+PUT http://localhost:3000/todos/0
+Accept: application/json
+
+### Test PUT /todos/{id} error 415
+PUT http://localhost:3000/todos/0
+Content-Type: application/javascript
+Accept: application/json
+
+### Test PUT /todos/{id} error 400
+PUT http://localhost:3000/todos/0
+Content-Type: application/json
+Accept: application/json
+
+{}
+
+### Test PUT /todos/{id} error 404
+PUT http://localhost:3000/todos/1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "state": "done"
+}
+
+
 ### Test successful DELETE /todos/{id}
 DELETE http://localhost:3000/todos/0
 Accept: application/json

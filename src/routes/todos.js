@@ -83,10 +83,13 @@ router.get('/:id', (req, res) => {
 // PUT /todos/{id}
 router.put('/:id', (req, res) => {
     if (!req.header("Content-Type")) {
-        return res.status(400).json({error: "Specify Content-Type"})
+        return res.status(417).json({error: "Specify Content-Type"})
     }
-    if (!req.body.title && !req.body.description && !req.body.state) {
-        return res.status(401).json({error: "No provided title/desciption/state to update"})
+    if (req.header("Content-Type") != "application/json") {
+        return res.status(415).json({error: "Only Content-Type: application/json accepted"})
+    }
+    if (!req.body.title && !req.body.description && !req.body.state && !req.body.dueDate) {
+        return res.status(400).json({error: "No provided title/desciption/state/dueDate to update"})
     }
     const id = req.params.id
     const todo = todos.find( anItem => anItem.id === id )
@@ -106,7 +109,10 @@ router.put('/:id', (req, res) => {
             todo.state = req.body.state
         }
     }
-    todo.modifiedAt = Date.now()
+    if (req.body.dueDate) {
+        todo.dueDate = req.body.dueDate
+    }
+    todo.modifiedAt = Date.now() // Always updated with successful update
     return res.status(200).json({Status: "Successfully updated todo!", "Content": todo})
 })
 
