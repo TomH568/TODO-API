@@ -5,26 +5,26 @@ Accept: application/json
 
 {
     "title": "Write API documentation",
-    "state": "todo"
+    "state": "doing"
 }
 
-### Test POST /todos error 417
+### Test POST /todos error 417 => expect: "error": "Specify Content-Type"
 POST http://localhost:3000/todos
 Accept: application/json
 
-### Test POST /todos error 415
+### Test POST /todos error 415 => expect: "error": "Only Content-Type: application/json accepted"
 POST http://localhost:3000/todos
 Content-Type: application/javascript
 Accept: application/json
 
-### Test POST /todos error 400 "No provided title"
+### Test POST /todos error 400 => expect: "error": "No provided title"
 POST http://localhost:3000/todos
 Content-Type: application/json
 Accept: application/json
 
 {}
 
-### Test POST /todos error 400 "Title should be a string."
+### Test POST /todos error 400 => expect: "error": "Title should be a string."
 POST http://localhost:3000/todos
 Content-Type: application/json
 Accept: application/json
@@ -33,7 +33,7 @@ Accept: application/json
     "title": 1
 }
 
-### Test POST /todos error 400 "Description should be a string."
+### Test POST /todos error 400 => expect: "error": "Description should be a string."
 POST http://localhost:3000/todos
 Content-Type: application/json
 Accept: application/json
@@ -43,7 +43,7 @@ Accept: application/json
     "description": {"state": "done"}
 }
 
-### Test POST /todos/{id} error 405
+### Test POST /todos/{id} error 405 => expect: "error": "Allow: GET, PUT, DELETE"
 POST   http://localhost:3000/todos/0
 Accept: application/json
 
@@ -55,7 +55,7 @@ Accept: application/json
 GET http://localhost:3000/todos/?state=todo
 Accept: application/json
 
-### Test successful GET /todos with incorrect filter
+### Test successful GET /todos with incorrect filter => expect: empty list
 GET http://localhost:3000/todos/?state=planning
 Accept: application/json
 
@@ -63,11 +63,11 @@ Accept: application/json
 GET  http://localhost:3000/todos/0
 Accept: application/json
 
-### Test GET /todos/{id} error 404
+### Test GET /todos/{id} error 404 => expect: "error": "Todo not found with id: 1"
 GET  http://localhost:3000/todos/1
 Accept: application/json
 
-### Test PUT /todos/ error 405
+### Test PUT /todos/ error 405 => expect: "error": "Allow: POST, GET"
 PUT http://localhost:3000/todos/
 Content-Type: application/json
 Accept: application/json
@@ -78,26 +78,29 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "state": "done"
+    "title": "New title",
+    "description": "Was done long ago",
+    "state": "done",
+    "dueDate": "Thu Jan 01 1970 02:00:00 GMT+0200 (Eastern European Standard Time)"
 }
 
-### Test PUT /todos/{id} error 417
+### Test PUT /todos/{id} error 417 => expect: "error": "Specify Content-Type"
 PUT http://localhost:3000/todos/0
 Accept: application/json
 
-### Test PUT /todos/{id} error 415
+### Test PUT /todos/{id} error 415 => expect: "error": "Only Content-Type: application/json accepted"
 PUT http://localhost:3000/todos/0
 Content-Type: application/javascript
 Accept: application/json
 
-### Test PUT /todos/{id} error 400
+### Test PUT /todos/{id} error 400 => expect: "error": "No provided title/desciption/state/dueDate to update"
 PUT http://localhost:3000/todos/0
 Content-Type: application/json
 Accept: application/json
 
 {}
 
-### Test PUT /todos/{id} error 404
+### Test PUT /todos/{id} error 404 => expect: "error": "Todo not found with id: 1"
 PUT http://localhost:3000/todos/1
 Content-Type: application/json
 Accept: application/json
@@ -106,7 +109,7 @@ Accept: application/json
     "state": "done"
 }
 
-### Test PUT /todos/{id} error 400 "Title should be a string."
+### Test PUT /todos/{id} error 400 => expect: "error": "Title should be a string."
 PUT http://localhost:3000/todos/0
 Content-Type: application/json
 Accept: application/json
@@ -115,7 +118,7 @@ Accept: application/json
     "title": 1
 }
 
-### Test PUT /todos/{id} error 400 "Title should be a string."
+### Test PUT /todos/{id} error 400 => expect: "error": "Description should be a string."
 PUT http://localhost:3000/todos/0
 Content-Type: application/json
 Accept: application/json
@@ -124,7 +127,7 @@ Accept: application/json
     "description": 1
 }
 
-### Test DELETE /todos/ error 405
+### Test DELETE /todos/ error 405 => expect: "error": "Allow: POST, GET"
 DELETE http://localhost:3000/todos/
 Accept: application/json
 
@@ -132,6 +135,6 @@ Accept: application/json
 DELETE http://localhost:3000/todos/0
 Accept: application/json
 
-### Test DELETE /todos/{id} error 404
+### Test DELETE /todos/{id} error 404 => expect: "error": "Todo not found with id: 1"
 DELETE http://localhost:3000/todos/1
 Accept: application/json

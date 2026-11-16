@@ -1,20 +1,14 @@
 import express from 'express'
 import { v4 as uuidv4 } from 'uuid'
+import { 
+    createNewTodo,
+    getTodos,
+    getTodoById,
+    updateTodo,
+    deleteTodo
+} from '../services/todos.js'
 
 const router = express.Router()
-
-// simulate the database
-let todos = [
-    {
-        id: "0", 
-        title: 'Study REST APIs',
-        description: 'Read a dissertation by Roy Fielding',
-        state: 'todo',
-        dueDate: null,
-        createdAt: Date(Date.now()).toString(),
-        modifiedAt: Date(Date.now()).toString()
-    }
-]
 
 // POST /todos
 router.post('/', (req, res) => {
@@ -30,31 +24,12 @@ router.post('/', (req, res) => {
     if (typeof req.body.title != "string") {
         return res.status(400).json({error: "Title should be a string."})
     }
-    let newdescription = null; // Default (optional)
     if (req.body.description) {
         if (typeof req.body.description != "string") {
             return res.status(400).json({error: "Description should be a string."})
         }
-        newdescription = req.body.description
     }
-    let newstate = "todo"; // Default (required)
-    if (req.body.state == "doing" || req.body.state == "done") {
-        newstate = req.body.state
-    }
-    let newdueDate = null; // Default (optional)
-    if (req.body.dueDate) {
-        newdueDate = req.body.dueDate
-    }
-    let newtodo = {
-        id: uuidv4(),
-        title: req.body.title,
-        description: newdescription,
-        state: newstate,
-        dueDate: newdueDate,
-        createdAt: Date(Date.now()).toString(),
-        modifiedAt: Date(Date.now()).toString()
-    }
-    todos.push(newtodo)
+    const newtodo = createNewTodo(req.body.title, req.body.description, req.body.state, req.body.dueDate)
     return res.status(201).json({Status: "Successfully created todo!", Content: newtodo})
 })
 
@@ -65,27 +40,15 @@ router.post('/:id', (req, res) => {
 
 // GET /todos
 router.get('/', (req, res) => {
-    if (req.query.state) {
-        let filteredtodos = new Array
-        todos.forEach(item => {
-            if (item.state == req.query.state) {
-                filteredtodos.push(item)
-            }
-        })
-        if ( filteredtodos.length == 0 ) {
-            return res.status(204)
-        }
-        return res.status(200).json( filteredtodos )
-    }
+    const todos = getTodos(req.query.state)
     return res.status(200).json( todos )
 })
 
 // GET /todos/{id}
 router.get('/:id', (req, res) => {
-    const id = req.params.id
-    const todo = todos.find( anItem => anItem.id === id )
+    const todo = getTodoById(req.params.id)
     if ( !todo ) {
-        return res.status(404).json({error: `Todo not found with id: ${id}`})
+        return res.status(404).json({error: `Todo not found with id: ${req.params.id}`})
     } else {
         return res.status(200).json( todo )
     }
@@ -107,35 +70,22 @@ router.put('/:id', (req, res) => {
     if (!req.body.title && !req.body.description && !req.body.state && !req.body.dueDate) {
         return res.status(400).json({error: "No provided title/desciption/state/dueDate to update"})
     }
-    const id = req.params.id
-    const todo = todos.find( anItem => anItem.id === id )
-    if ( !todo ) {
-        return res.status(404).json({error: "Todo not found"})
-    }
     if (req.body.title) {
         if (typeof req.body.title != "string") {
             return res.status(400).json({error: "Title should be a string."})
         }
-        todo.title = req.body.title
     }
     if (req.body.description) {
         if (typeof req.body.description != "string") {
             return res.status(400).json({error: "Description should be a string."})
         }
-        todo.description = req.body.description
     }
-    if (req.body.state) {
-        if (req.body.state != "todo" && req.body.state != "doing" && req.body.state != "done") {
-            todo.state = "todo" // Default
-        } else {
-            todo.state = req.body.state
-        }
+    const updatedTodo = updateTodo(req.params.id, req.body.title, req.body.description, req.body.state, req.body.dueDate)
+    if ( !updatedTodo ) {
+        return res.status(404).json({error: `Todo not found with id: ${req.params.id}`})
+    } else {
+        return res.status(200).json({Status: "Successfully updated todo!", "Content": updatedTodo})
     }
-    if (req.body.dueDate) {
-        todo.dueDate = req.body.dueDate
-    }
-    todo.modifiedAt = Date(Date.now()).toString() // Always updated with successful update
-    return res.status(200).json({Status: "Successfully updated todo!", "Content": todo})
 })
 
 // Not allowed method
@@ -145,13 +95,12 @@ router.delete('/', (req, res) => {
 
 // DELETE /todos/{id}
 router.delete('/:id', (req, res) => {
-    const id = req.params.id
-    const todo = todos.find( anItem => anItem.id === id )
+    const todo = deleteTodo(req.params.id)
     if ( !todo ) {
-        return res.status(404).json({error: `Todo not found with id: ${id}`})
+        return res.status(404).json({error: `Todo not found with id: ${req.params.id}`})
+    } else {
+        return res.status(200).json({Status: `Successfully deleted todo with id: ${req.params.id}`})
     }
-    todos.splice(todo, 1)
-    return res.status(200).json({Status: `Successfully deleted todo with id: ${id}`})
 })
 
 export default router
