@@ -9,7 +9,7 @@ import {
     updateTodo,
     deleteTodo,
     resetTodos
-} from '../services/todos.js'
+} from '../src/services/todos.js'
 
 describe('Todos Services Test', () => {
     test('verifyState should return "doing"|"done" when using them as inputs, otherwise "todo"', () => {
@@ -18,7 +18,6 @@ describe('Todos Services Test', () => {
         const otherstate = verifyState()
         assert.strictEqual(otherstate, "todo")
     })
-    console.log(getTodos())
     test('createNewTodo should return the new todo item', () => {
         const newTodo = createNewTodo("any", undefined, "done", undefined)
         assert.strictEqual(newTodo.title, "any")
