@@ -13,7 +13,7 @@ let todos = [
     }
 ]
 
-function verifyState(state) {
+export function verifyState(state) {
     if (state !== "doing" && state !== "done") {
         state = "todo"
     }
@@ -84,4 +84,18 @@ export function deleteTodo(IdToDelete) {
         todos.splice(todo, 1)
         return true
     }
+}
+
+export function resetTodos() {
+    todos = [
+    {
+        id: "0", 
+        title: 'Study REST APIs',
+        description: 'Read a dissertation by Roy Fielding',
+        state: 'todo',
+        dueDate: null,
+        createdAt: Date(),
+        modifiedAt: Date()
+    }
+    ]
 }
