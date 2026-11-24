@@ -5,7 +5,8 @@ import {
     getTodos,
     getTodoById,
     updateTodo,
-    deleteTodo
+    deleteTodo,
+    toCsv
 } from '../services/todos.js'
 
 const router = express.Router()
@@ -40,7 +41,14 @@ router.post('/:id', (req, res) => {
 
 // GET /todos
 router.get('/', (req, res) => {
-    const todos = getTodos(req.query.state)
+    const format = req.accepts(['application/json', 'text/csv'])
+    if ( !format ) {
+        return res.status(400).json({error: "Accepted formats: 'application/json', 'text/csv'"})
+    }
+    const todos = getTodos(req.query.state, format)
+    if ( format === 'text/csv' ) {
+        return res.status(200).send( toCsv(todos) )
+    }
     return res.status(200).json( todos )
 })
 

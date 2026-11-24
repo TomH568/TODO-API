@@ -36,10 +36,9 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TodoItem'
-            application/csv:
+            text/csv:
               schema:
                 type: string
-                $ref: '#/components/schemas/TodoItem'
     post:
       tags: [ Todos ]
       summary: Create new Todo item.

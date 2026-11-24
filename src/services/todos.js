@@ -35,7 +35,7 @@ export function createNewTodo(title, description=null, state, dueDate=null) {
     return newtodo
 }
 
-export function getTodos(query) {
+export function getTodos(query, format) {
     if (query) {
         let filteredtodos = new Array
         todos.forEach(item => {
@@ -98,4 +98,26 @@ export function resetTodos() {
         modifiedAt: Date()
     }
     ]
+}
+
+export function toCsv( todos ) {
+    return [
+        [
+            "id",
+            "title",
+            "state",
+            "dueDate",
+            "createdAt",
+            "modifiedAt"
+        ],
+        ...todos.map( item => [
+            item.id,
+            "\"" + item.title + "\"",
+            "\"" + item.description + "\"",
+            item.state,
+            item.dueDate,
+            item.createdAt,
+            item.modifiedAt
+        ])
+    ].map(e => e.join(",")).join("\n")
 }

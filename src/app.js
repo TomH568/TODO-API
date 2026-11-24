@@ -14,6 +14,5 @@ const swaggerDocument = YAML.load('./doc/api.yaml');
 app.use('/todos', todosRouter)
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-
 // export the app object to server.js where we referred to that
 export default app
