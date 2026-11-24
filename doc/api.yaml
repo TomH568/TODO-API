@@ -20,6 +20,13 @@ paths:
       tags: [ Todos ]
       produces: [ 'application/json', 'text/csv' ]
       summary: Get all todos, or filter by state
+      parameters:
+        - in: query
+          name: state
+          schema:
+            type: string
+            $ref: '#/components/schemas/TodoState'
+          required: false
       responses:
         '200':
           description: List of Todo items.
@@ -29,14 +36,196 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TodoItem'
+            application/csv:
+              schema:
+                type: string
+                $ref: '#/components/schemas/TodoItem'
+    post:
+      tags: [ Todos ]
+      summary: Create new Todo item.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - title
+              properties:
+                title:
+                  description: Title of the todo.
+                  type: string
+                  example: "Write API documentation"
+                description:
+                  description: Optional more information about the todo.
+                  type: string
+                  nullable: true
+                  example: "Shouldn't take a long time"
+                state:
+                  description: The current state of the todo. If not provided, defaults to 'todo'.
+                  type: string
+                  $ref: '#/components/schemas/TodoState'
+                  example: "doing"
+                dueDate:
+                  description: Optional deadline for the todo.
+                  type: string
+                  nullable: true
+                  example: null
+      responses:
+        '201':
+          description: Confirmation that new Todo has been created and the newly created Todo item.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  Status:
+                    $ref: '#/components/schemas/responses/CreatedStatus'
+                  Content:
+                    $ref: '#/components/schemas/TodoItem'
+        '417':
+          description: The server cannot handle request, because content-type was not specified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses/ExpectionFailed'
+        '415':
+          description: The server cannot handle request, because the provided content-type is not supported.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses/WrongFormat'
         '400':
-          $ref: '#/components/schemas/responses/BadRequest'
+          description: No title/title not string/description not string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses/BadRequest'
+    put:
+      tags: [ Unsupported operations ]
+      responses:
+        '405':
+          description: Not supported in /todos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses/UnsupportedTodos'
+    delete:
+      tags: [ Unsupported operations ]
+      responses:
+        '405':
+          description: Not supported in /todos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses/UnsupportedTodos'
+  /todos/{id}:
+    get:
+      tags: [ Todos ]
+      produces: [ 'application/json', 'text/csv' ]
+      summary: Get a Todo item by its id.
+      parameters:
+        - name: id
+          in: path
+          description: Todo id
+          required: true
+          schema:
+            $ref: '#/components/schemas/TodoId'
+      responses:
+        '200':
+          description: Todo item.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoItem'
+        '404':
+          description: Couldn't find a todo with the id provided in the url
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses/NotFound'
+    put:
+      tags: [ Todos ]
+      summary: Update a Todo item.
+      parameters:
+        - name: id
+          in: path
+          description: Todo id
+          required: true
+          schema:
+            $ref: '#/components/schemas/TodoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateTodo'
+      responses:
+        '200':
+          description: Successfully updated todo
+        '417':
+          description: The server cannot handle request, because content-type was not specified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses/ExpectionFailed'
+        '415':
+          description: The server cannot handle request, because the provided content-type is not supported.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses/WrongFormat'
+        '404':
+          description: Couldn't find a todo with the id provided in the url
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses/NotFound'
+        '400':
+          description: No provided title/description/due date to update or title/description not string.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses/BadRequest'
+    delete: 
+      tags: [ Todos ]
+      summary: Delete a Todo item.
+      parameters:
+        - name: id
+          in: path
+          description: Todo id
+          required: true
+          schema:
+            $ref: '#/components/schemas/TodoId'
+      responses:
+        '200':
+          description: Successfully deleted todo
+        '404':
+          description: Couldn't find a todo with the id provided in the url
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses/NotFound'
+    post:
+      tags: [ Unsupported operations ]
+      responses:
+        '405':
+          description: Not supported in /todos/{id}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses/UnsupportedId'
 
 components:
   schemas:
-    TodoState:
+    TodoId:
+      description: Unique id. Created with uuidv4.
       type: string
-      description: Current state of the TOdo items
+      format: uuidv4
+      readOnly: true
+    TodoState:
+      description: Current state of the Todo items
+      type: string
       enum:
         - todo
         - doing
@@ -51,17 +240,94 @@ components:
         - modifiedAt
       properties:
         id:
-          type: string
-          readOnly: true
-          example: "0"
+          $ref: '#/components/schemas/TodoId'
         title:
           type: string
           minLength: 1
-          example: "Write your first OAD"
+        description:
+          type: string
+          nullable: true
         state:
           $ref: '#/components/schemas/TodoState'
+        dueDate:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          readOnly: true
+        modifiedAt:
+          type: string
+      example:
+        id: "166ec4c7-aaa5-4d46-a292-f3faaaf677ec"
+        title: "Write your first OAD"
+        description: null
+        state: "todo"
+        dueDate: null
+        createdAt: "Mon Nov 23 2026 12:26:57 GMT+0200 (Eastern European Standard Time)"
+        modifiedAt: "Mon Nov 23 2026 12:26:57 GMT+0200 (Eastern European Standard Time)"
+    updateTodo:
+      type: object
+      properties:
+        title:
+          description: Title of the todo.
+          type: string
+          example: "Write API documentation"
+        description:
+          description: Optional more information about the todo.
+          type: string
+          nullable: true
+          example: "Took longer than expected"
+        state:
+          description: The current state of the todo. If not provided, defaults to 'todo'.
+          type: string
+          $ref: '#/components/schemas/TodoState'
+          example: "done"
+        dueDate:
+          description: Optional deadline for the todo.
+          type: string
+          nullable: true
+          example: null
+      anyOf:
+        - required: [title]
+        - required: [description]
+        - required: [state]
+        - required: [dueDate]
     responses:
       BadRequest:
         description: Invalid input
+        type: object
+        enum:
+          - "No provided title"
+          - "Title should be a string."
+          - "Description should be a string."
+        example: 
+          error: "Title should be a string."
+      CreatedStatus:
+        description: Created new Todo item
         type: string
-        example: invalid input
+        example: Successfully created todo!
+      ExpectionFailed:
+        description: Server cannot accept expection
+        type: object
+        example:
+          error: "Specify Content-Type"
+      WrongFormat:
+        description: Wrong Content-Type
+        type: object
+        example:
+          error: "Only Content-Type: application/json accepted"
+      NotFound:
+        description: Todo not found
+        type: object
+        example:
+          error: "Todo not found with id 1"
+      UnsupportedTodos:
+        description: Unsupported operations for /todos
+        type: object
+        example:
+          error: "Allow: POST, GET"
+      UnsupportedId:
+        description: Unsupported operations for /todos/{id}
+        type: object
+        example:
+          error: "Allow: GET, PUT, DELETE"
